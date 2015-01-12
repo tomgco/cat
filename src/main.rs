@@ -1,13 +1,12 @@
 extern crate getopts;
-use getopts::{optopt,optflag,getopts,OptGroup,usage};
+use getopts::{optopt,optflag,getopts,OptGroup,short_usage,Matches};
 use std::os;
 
 fn print_usage(program: &str, opts: &[OptGroup]) {
-    let brief = format!("Usage: {} [options]", program);
-    print!("{}", usage(brief.as_slice(), opts));
+    let brief = format!("{}", program);
+    print!("{}", short_usage(brief.as_slice(), opts));
 }
 
-#[main]
 fn main() {
     let args: Vec<String> = os::args();
     let program = args[0].clone();
@@ -27,12 +26,23 @@ fn main() {
         }
     };
 
-    let input = if !matches.free.is_empty() {
-        matches.free[0].clone()
-    } else {
+    if matches.free.is_empty() {
         print_usage(program.as_slice(), opts);
+    };
+
+    scanfiles(matches);
+}
+
+fn scanfiles(matches: Matches) {
+
+    let files = if !matches.free.is_empty() {
+        matches.free.clone()
+    } else {
+        print!("Nada");
         return;
     };
 
-    println!("Hello, World!");
+    for file in files.iter() {
+        print!("{}\n", file);
+    }
 }
