@@ -1,6 +1,7 @@
 extern crate getopts;
 use getopts::{optopt,optflag,getopts,OptGroup,short_usage,Matches};
 use std::os;
+use std::io::{File, stdout};
 
 fn print_usage(program: &str, opts: &[OptGroup]) {
     let brief = format!("{}", program);
@@ -12,10 +13,7 @@ fn main() {
     let program = args[0].clone();
 
     let opts = &[
-        optflag("b", "", ""),
-        optflag("e", "", ""),
-        optflag("n", "", ""),
-        optflag("t", "", ""),
+        optflag("u", "", ""),
     ];
 
     let matches = match getopts(args.tail(), opts) {
@@ -30,19 +28,21 @@ fn main() {
         print_usage(program.as_slice(), opts);
     };
 
-    scanfiles(matches);
+    cat(matches);
 }
 
-fn scanfiles(matches: Matches) {
+fn cat(matches: Matches) {
 
     let files = if !matches.free.is_empty() {
         matches.free.clone()
     } else {
-        print!("Nada");
         return;
     };
 
     for file in files.iter() {
-        print!("{}\n", file);
+        let contents = File::open(&Path::new(file)).read_to_end();
+        for line in contents.iter() {
+            stdout().write(line.as_slice());
+        }
     }
 }
